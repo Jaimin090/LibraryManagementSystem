@@ -14,7 +14,7 @@ namespace LibraryManagementSystem.DatabaseManager
         public static List<DVD> dvds = [];
         public static List<Book> books = [];
 
-        public static LibraryItem? GetItem(int id)
+        public static LibraryItem GetItem(int id)
         {
             List<LibraryItem> allItems = GetAllItems();
             for (int i = 0; i < allItems.Count; i++)
@@ -25,17 +25,12 @@ namespace LibraryManagementSystem.DatabaseManager
                     return item;
                 }
             }
-            return null;
+            throw new Exceptions.ItemDoesntExistError();
         }
 
         public static List<LibraryItem> GetAllItems()
         {
-            var allItems = new List<LibraryItem>();
-            allItems.AddRange(games);
-            allItems.AddRange(dvds);
-            allItems.AddRange(books);
-
-            return allItems;
+            return new List<LibraryItem>(games.Concat<LibraryItem>(dvds).Concat(books));
         }
 
         public static async Task<List<DVD>> SelectAllDvDs()

@@ -17,7 +17,6 @@ namespace LibraryManagementSystem.Models.Items
         public DateTime? BorrowDate { get; set; }
         public DateTime? ReturnDate { get; set; }
         public User? Borrower { get; set; }
-
         public double CalculateLateFees(int daysLate)
         {
             throw new NotImplementedException();

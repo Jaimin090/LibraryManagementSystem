@@ -1,4 +1,5 @@
-﻿using LibraryManagementSystem.Models.Interfaces;
+﻿using LibraryManagementSystem.Exceptions;
+using LibraryManagementSystem.Models.Interfaces;
 using LibraryManagementSystem.Models.Items;
 using LibraryManagementSystem.Models.Users;
 using Npgsql;
@@ -10,71 +11,81 @@ namespace LibraryManagementSystem.DatabaseManager
     {
         public static void HandleBorrow(User user, LibraryItem item)
         {
-            if (item is IBorrowable && item.IsAvailable) {
-                foreach (LibraryItem libItem in LibraryItemsManager.GetAllItems())
-                {
-                    if (item.Id == libItem.Id)
-                    {
-                        if (item is Book book)
-                        {
-                            book.IsAvailable = false;
-                            book.Borrower = user;
-                            book.BorrowDate = DateTime.Now;
-                            book.ReturnDate = DateTime.Now.AddDays(14);
-                        }
-                        else if (item is DVD dvd)
-                        {
-                            dvd.IsAvailable = false;
-                            dvd.Borrower = user;
-                            dvd.BorrowDate = DateTime.Now;
-                            dvd.ReturnDate = DateTime.Now.AddDays(7);
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void HandleReturn(int itemId)
-        {
-            foreach (LibraryItem libItem in LibraryItemsManager.GetAllItems())
+            try
             {
-                if (itemId == libItem.Id)
+                if (item is IBorrowable && item.IsAvailable)
                 {
-                    if (libItem is Book book)
+                    if (item is Book book)
                     {
-                        book.IsAvailable = true;
-                        book.Borrower = null;
-                        book.BorrowDate = null;
-                        book.ReturnDate = null;
+                        book.IsAvailable = false;
+                        book.Borrower = user;
+                        book.BorrowDate = DateTime.Now;
+                        book.ReturnDate = DateTime.Now.AddDays(14);
                     }
-                    else if (libItem is DVD dvd)
+                    else if (item is DVD dvd)
                     {
-                        dvd.IsAvailable = true;
-                        dvd.Borrower = null;
-                        dvd.BorrowDate = null;
-                        dvd.ReturnDate = null;
+                        dvd.IsAvailable = false;
+                        dvd.Borrower = user;
+                        dvd.BorrowDate = DateTime.Now;
+                        dvd.ReturnDate = DateTime.Now.AddDays(7);
                     }
+
                 }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
-        public static string GetBorrowedItemInfo(int id)
+        public static double HandleReturn(int itemId, DateTime todayDate)
         {
-            foreach (LibraryItem libItem in LibraryItemsManager.GetAllItems()) {
+            try
+            {
+                LibraryItem item = LibraryItemsManager.GetItem(itemId);
+                if (item is Book book)
+                {
 
-                if (libItem.Id == id) {
+                    double difference = (book.ReturnDate - todayDate).Value.TotalDays;
+
+                    book.IsAvailable = true;
+                    book.Borrower = null;
+                    book.BorrowDate = null;
+                    book.ReturnDate = null;
+
+                    if (difference < 0)
                     {
-                        return libItem switch
-                        {
-                            Book book => $"{book.Borrower.FirstName} {book.Borrower.LastName} borrowed {book.Title} at {book.BorrowDate}. Due at {book.ReturnDate}",
-                            DVD dvd => $"{dvd.Borrower.FirstName}   {dvd.Borrower.LastName} borrowed {dvd.Title} at {dvd.BorrowDate}. Due at {dvd.ReturnDate}",
-                            _ => "error"
-                        };
+                        return 0.5 * Math.Abs(difference);
                     }
-                }
-            }
 
-            return "error";
+                    return 0;
+
+                }
+                else if (item is DVD dvd)
+                {
+                    double difference = (dvd.ReturnDate - todayDate).Value.TotalDays;
+
+                    dvd.IsAvailable = true;
+                    dvd.Borrower = null;
+                    dvd.BorrowDate = null;
+                    dvd.ReturnDate = null;
+
+                    if (difference < 0)
+                    {
+                        return Math.Abs(difference);
+                    }
+
+                    return 0;
+                }
+
+                throw new ItemDoesntExistError();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
+
+
     }
 }

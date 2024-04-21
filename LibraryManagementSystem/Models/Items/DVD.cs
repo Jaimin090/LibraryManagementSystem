@@ -10,7 +10,7 @@ namespace LibraryManagementSystem.Models.Items
 
         public string Director { get; private set; } = director;
         public DateTime? BorrowDate { get; set; }
-        public DateTime? ReturnDate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public DateTime? ReturnDate { get; set; }
         public User? Borrower { get; set; }
 
         public override string GetInfo()

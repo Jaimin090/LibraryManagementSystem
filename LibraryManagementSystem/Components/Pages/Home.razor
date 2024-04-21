@@ -193,9 +193,7 @@
 
     private void HandleUserChange()
     {
-        Console.WriteLine(users.Count);
         currUser = users.FirstOrDefault(u => u.Id == currUserId);
-        Console.WriteLine(currUser.FirstName);
     }
 
     protected override void OnInitialized()

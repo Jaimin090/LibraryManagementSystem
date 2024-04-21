@@ -11,7 +11,7 @@
     <div style="display: flex; flex-direction: column; gap: 10px;">
         <div>
             <label>User id: </label>
-            <input @bind="userId" type="number" />
+            <input @bind="userId" type="number" min="1" />
             <button @onclick="ContinueFromUserIdInput">Continue</button>
             @if (user != null)
             {
@@ -24,7 +24,7 @@
         {
             <div>
                 <label>Item id: </label>
-                <input @bind="itemId" />
+                <input @bind="itemId" min="1" type="number" />
                 <button @onclick="ContinueFromItemIdInput">Continue</button>
 
                 @if (item != null)
@@ -47,7 +47,7 @@
     private int? userId;
     private int? itemId;
     private User? user;
-    private LibraryItem? item;
+    private static LibraryItem? item;
     private string? err;
 
     private void CheckOut()

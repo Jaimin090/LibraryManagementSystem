@@ -7,6 +7,8 @@
 
 <div>
     <h3>@err</h3>
+
+
     <div>
         <label>Who are you? </label>
         <select @bind="currUserId">
@@ -17,13 +19,80 @@
         </select>
     </div>
 
-    <button @onclick="HandleUserChange">Continue</button>
+
+    @if (displayUsers.Count > 0)
+    {
+        <h4>Users</h4>
+
+        <div style="display: flex; justify-content: space-evenly; align-content: center; margin-bottom:0">
+            <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Id</p>
+            <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">First Name
+            </p>
+            <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Last Name</p>
+            <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">User Type</p>
+            <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"></p>
+
+        </div>
+        @foreach (User user in displayUsers)
+        {
+            string userType = "";
+            if (user is Patron)
+            {
+                userType = "Patron";
+            }
+            else if (user is Owner)
+            {
+                userType = "Patron";
+            }
+            if (user is Librarian)
+            {
+                userType = "Librarian";
+            }
+            <div style="display: flex; justify-content: space-evenly; align-content: center; margin-top:0">
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">@user.Id
+                </p>
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">
+                    @user.FirstName</p>
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">
+                    @user.LastName</p>
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">
+                    @userType</p>
+                <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"><button
+                        style="display: block; width: 100%; color: red" @onclick="() => RemoveUser(user.Id)">Remove</button></p>
 
 
-    @if (currUser != null)
+            </div>
+        }
+    }
+    @if (currUser != null && displayUsers.Count == 0)
+    {
+        <h6>Empty</h6>
+    }
+</div>
+
+
+<button @onclick="HandleUserChange">Continue</button>
+
+
+@if (currUser != null)
+{
+    <div>
+        <h3>Add Patron</h3>
+        <div>
+            <label>First Name:</label>
+            <input type="text" @bind="firstName" />
+        </div>
+        <div>
+            <label>Last Name:</label>
+            <input type="text" @bind="lastName" />
+        </div>
+        <button @onclick="AddPatron">Add Patron</button>
+    </div>
+
+    @if (currUser is Owner)
     {
         <div>
-            <h3>Add Patron</h3>
+            <h3>Add Librarian</h3>
             <div>
                 <label>First Name:</label>
                 <input type="text" @bind="firstName" />
@@ -32,26 +101,10 @@
                 <label>Last Name:</label>
                 <input type="text" @bind="lastName" />
             </div>
-            <button @onclick="AddPatron">Add Patron</button>
+            <button @onclick="AddLibrarian">Add Librarian</button>
         </div>
-
-        @if (currUser is Owner)
-        {
-            <div>
-                <h3>Add Librarian</h3>
-                <div>
-                    <label>First Name:</label>
-                    <input type="text" @bind="firstName" />
-                </div>
-                <div>
-                    <label>Last Name:</label>
-                    <input type="text" @bind="lastName" />
-                </div>
-                <button @onclick="AddLibrarian">Add Librarian</button>
-            </div>
-        }
     }
-</div>
+}
 
 @code {
     private int? currUserId;
@@ -60,24 +113,27 @@
     private string? err;
 
     User? currUser;
-    private List<User> users = [];
+    private List<User> users = UsersManagement.users;
+    private List<User> displayUsers = [];
 
     private void HandleUserChange()
     {
         currUser = users.FirstOrDefault(u => u.Id == currUserId);
+
+        if (currUser is Librarian)
+        {
+            displayUsers = users.Where(u => u is Patron).ToList();
+        }
+
+        else if (currUser is Owner)
+        {
+            displayUsers = users.Where(u => u is Patron || u is Librarian).ToList();
+        }
     }
 
     protected override void OnInitialized()
     {
-        try
-        {
-            users = UsersManagement.users;
-            currUserId = users.First().Id;
-        }
-        catch (Exception ex)
-        {
-            err = ex.Message;
-        }
+        currUserId = users.First().Id;
     }
 
 
@@ -101,6 +157,19 @@
             User librarian = new Librarian(id, firstName, lastName);
 
             UsersManagement.users.Add(librarian);
+        }
+    }
+
+    private void RemoveUser(int id)
+    {
+        try
+        {
+            User user = UsersManagement.GetUser(id);
+            users.Remove(user);
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
         }
     }
 }

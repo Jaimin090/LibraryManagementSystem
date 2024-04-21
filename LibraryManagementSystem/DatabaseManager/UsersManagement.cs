@@ -1,4 +1,4 @@
-﻿using LibraryManagementSystem.Models.Items;
+﻿using LibraryManagementSystem.Exceptions;
 using LibraryManagementSystem.Models.Users;
 using Npgsql;
 
@@ -8,7 +8,7 @@ namespace LibraryManagementSystem.DatabaseManager
     {
         public static List<User> users = [];
 
-        public static User? GetUser(int id)
+        public static User GetUser(int id)
         {
             for (int i = 0; i < users.Count; i++)
             {
@@ -18,7 +18,7 @@ namespace LibraryManagementSystem.DatabaseManager
                     return user;
                 }
             }
-            return null;
+            throw new UserDoesntExistError();
         }
 
         public static async Task<List<User>> SelectAllUsers()
@@ -42,28 +42,15 @@ namespace LibraryManagementSystem.DatabaseManager
                         var firstName = reader.GetString(reader.GetOrdinal("firstname"));
                         var lastName = reader.GetString(reader.GetOrdinal("lastname"));
 
-                        if (userType == 1)
+                        User? newUser = userType switch
                         {
-                            users.Add(new Owner(id, firstName, lastName));
-                        }
-                        else if (userType == 2)
-                        {
-                            users.Add(new Librarian(id, firstName, lastName));
-                        }
-                        else if (userType == 3)
-                        {
-                            users.Add(new Patron(id, firstName, lastName));
-                        }
+                            1 => new Owner(id, firstName, lastName),
+                            2 => new Librarian(id, firstName, lastName),
+                            3 => new Patron(id, firstName, lastName),
+                            _ => null
+                        };
 
-                        // User? newUser = userType switch
-                        // {
-                        //     1 => new Owner(id, firstName, lastName),
-                        //     2 => new Librarian(id, firstName, lastName),
-                        //     3 => new Patron(id, firstName, lastName),
-                        //     _ => null
-                        // };
-
-                        // if (newUser != null) users.Add(newUser);
+                        if (newUser != null) users.Add(newUser);
 
                     }
                 }
@@ -73,7 +60,7 @@ namespace LibraryManagementSystem.DatabaseManager
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception("" + ex.Message);
+                throw new Exception(ex.Message);
             }
         }
 

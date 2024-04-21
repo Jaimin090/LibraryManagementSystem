@@ -9,6 +9,6 @@ namespace LibraryManagementSystem.Models.Items
         public int Id { get; protected set; } = id;
 
         public abstract string GetInfo();
-        public bool IsAvailable { get; set; }
+        public bool IsAvailable { get; set; } = true;
     }
 }
