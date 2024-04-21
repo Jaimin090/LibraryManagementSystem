@@ -1,0 +1,49 @@
+﻿ @page "/return"
+@using LibraryManagementSystem.DatabaseManager
+@using LibraryManagementSystem.Models.Users
+@using LibraryManagementSystem.Models;
+@using LibraryManagementSystem.Models.Items;
+
+<div>
+    <h2>Return item</h2>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+
+
+        <div>
+            <label>Item id: </label>
+            <input @bind="itemId" />
+            <button @onclick="ContinueFromItemIdInput">Continue</button>
+
+            @if (!string.IsNullOrEmpty(rentalInfo))
+            {
+                <h3>@rentalInfo.ToString()</h3>
+                <button style="width: fit-content" @onclick="ReturnItem">Return</button>
+
+            }
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private int? itemId;
+    private User? user;
+    private string? rentalInfo;
+
+    private void ContinueFromItemIdInput()
+    {
+        if (itemId.HasValue)
+        {
+            rentalInfo = BorrowItemsManager.GetBorrowedItemInfo(itemId.Value);
+        }
+    }
+
+    private void ReturnItem()
+    {
+        if (itemId.HasValue)
+        {
+            BorrowItemsManager.HandleReturn(itemId.Value);
+        }
+    }
+}

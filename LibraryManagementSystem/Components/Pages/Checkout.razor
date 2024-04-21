@@ -1,0 +1,97 @@
+﻿@page "/checkout"
+@using LibraryManagementSystem.DatabaseManager
+@using LibraryManagementSystem.Models.Interfaces
+@using LibraryManagementSystem.Models.Users
+@using LibraryManagementSystem.Models;
+@using LibraryManagementSystem.Models.Items;
+
+<div>
+    <h2>Checkout</h2>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div>
+            <label>User id: </label>
+            <input @bind="userId" type="number" />
+            <button @onclick="ContinueFromUserIdInput">Continue</button>
+            @if (user != null)
+            {
+                <h3>@user.ToString()</h3>
+            }
+        </div>
+
+
+        @if (user != null)
+        {
+            <div>
+                <label>Item id: </label>
+                <input @bind="itemId" />
+                <button @onclick="ContinueFromItemIdInput">Continue</button>
+
+                @if (item != null)
+                {
+                    <h3>@item.GetInfo()</h3>
+                }
+
+            </div>
+
+            @if (item != null)
+            {
+                <button style="width: fit-content" @onclick="CheckOut">Checkout</button>
+            }
+        }
+    </div>
+</div>
+
+@code {
+
+    private int? userId;
+    private int? itemId;
+    private User? user;
+    private LibraryItem? item;
+    private string? err;
+
+    private void CheckOut()
+    {
+        try
+        {
+            if (user != null && item != null)
+            {
+                BorrowItemsManager.HandleBorrow(user, item);
+            }
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    }
+
+    private void ContinueFromUserIdInput()
+    {
+        try
+        {
+            if (userId.HasValue)
+            {
+                user = UsersManagement.GetUser(userId.Value);
+            }
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    }
+
+    private void ContinueFromItemIdInput()
+    {
+        try
+        {
+            if (itemId.HasValue)
+            {
+                item = LibraryItemsManager.GetItem(itemId.Value);
+            }
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    }
+}

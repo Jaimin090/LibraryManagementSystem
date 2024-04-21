@@ -1,0 +1,106 @@
+﻿@page "/addPerson"
+@using LibraryManagementSystem.DatabaseManager
+@using LibraryManagementSystem.Models.Interfaces
+@using LibraryManagementSystem.Models.Users
+@using LibraryManagementSystem.Models;
+@using LibraryManagementSystem.Models.Items;
+
+<div>
+    <h3>@err</h3>
+    <div>
+        <label>Who are you? </label>
+        <select @bind="currUserId">
+            @foreach (User user in users)
+            {
+                <option value="@user.Id">@user.FirstName @user.LastName</option>
+            }
+        </select>
+    </div>
+
+    <button @onclick="HandleUserChange">Continue</button>
+
+
+    @if (currUser != null)
+    {
+        <div>
+            <h3>Add Patron</h3>
+            <div>
+                <label>First Name:</label>
+                <input type="text" @bind="firstName" />
+            </div>
+            <div>
+                <label>Last Name:</label>
+                <input type="text" @bind="lastName" />
+            </div>
+            <button @onclick="AddPatron">Add Patron</button>
+        </div>
+
+        @if (currUser is Owner)
+        {
+            <div>
+                <h3>Add Librarian</h3>
+                <div>
+                    <label>First Name:</label>
+                    <input type="text" @bind="firstName" />
+                </div>
+                <div>
+                    <label>Last Name:</label>
+                    <input type="text" @bind="lastName" />
+                </div>
+                <button @onclick="AddLibrarian">Add Librarian</button>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private int? currUserId;
+    private string? firstName;
+    private string? lastName;
+    private string? err;
+
+    User? currUser;
+    private List<User> users = [];
+
+    private void HandleUserChange()
+    {
+        currUser = users.FirstOrDefault(u => u.Id == currUserId);
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            users = UsersManagement.users;
+            currUserId = users.First().Id;
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    }
+
+
+    private void AddPatron()
+    {
+        int id = users.OrderByDescending(u => u.Id).First().Id + 1;
+        if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
+        {
+            User patron = new Patron(id, firstName, lastName);
+
+            UsersManagement.users.Add(patron);
+        }
+    }
+
+    private void AddLibrarian()
+    {
+        int id = users.OrderByDescending(u => u.Id).First().Id + 1;
+        if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
+        {
+
+            User librarian = new Librarian(id, firstName, lastName);
+
+            UsersManagement.users.Add(librarian);
+        }
+    }
+}

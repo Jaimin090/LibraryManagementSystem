@@ -1,0 +1,262 @@
+﻿@page "/"
+@using LibraryManagementSystem.DatabaseManager
+@using LibraryManagementSystem.Models.Users
+@using LibraryManagementSystem.Models;
+@using LibraryManagementSystem.Models.Items;
+@using Npgsql
+@using NpgsqlTypes
+
+<div>
+    <h3>@err</h3>
+    <h2>Items</h2>
+
+    <div>
+        <h4>Books</h4>
+        @if (books.Count > 0)
+        {
+            <div style="display: flex; justify-content: space-evenly; align-content: center; margin-bottom:0">
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Id</p>
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Title</p>
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Author
+                </p>
+                <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"></p>
+            </div>
+            @foreach (var book in books)
+            {
+                <div style="display: flex; justify-content: space-evenly; align-content: center; margin-top:0">
+                    <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">@book.Id
+                    </p>
+                    <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">
+                        @book.Title</p>
+                    <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">
+                        @book.Author</p>
+                    <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"><button
+                            style="display: block; width: 100%; color: red"
+                            @onclick="() => RemoveItem<Book>(book.Id, books)">Remove</button></p>
+                </div>
+            }
+        }
+        else
+        {
+            <h6>Empty</h6>
+        }
+    </div>
+
+    <div>
+        <h4>Games</h4>
+        @if (games.Count > 0)
+        {
+            <div style="display: flex; justify-content: space-evenly; align-content: center; margin-bottom:0">
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Id</p>
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Name</p>
+                <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"></p>
+            </div>
+            @foreach (Game game in games)
+            {
+                <div style="display: flex; justify-content: space-evenly; align-content: center; margin-top:0">
+                    <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">@game.Id
+                    </p>
+                    <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">
+                        @game.Name</p>
+                    <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"><button
+                            style="display: block; width: 100%; color: red"
+                            @onclick="() => RemoveItem<Game>(game.Id, games)">Remove</button></p>
+                </div>
+            }
+        }
+        else
+        {
+            <h6>Empty</h6>
+        }
+
+    </div>
+
+    <div>
+        <h4>DVDs</h4>
+        @if (dvds.Count > 0)
+        {
+            <div style="display: flex; justify-content: space-evenly; align-content: center; margin-bottom:0">
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Id</p>
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Title</p>
+                <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Director
+                </p>
+                <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"></p>
+
+            </div>
+            @foreach (DVD dvd in dvds)
+            {
+                <div style="display: flex; justify-content: space-evenly; align-content: center; margin-top:0">
+                    <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">@dvd.Id
+                    </p>
+                    <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">
+                        @dvd.Title</p>
+                    <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">
+                        @dvd.Director</p>
+                    <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"><button
+                            style="display: block; width: 100%; color: red"
+                            @onclick="() => RemoveItem<DVD>(dvd.Id, dvds)">Remove</button></p>
+
+                </div>
+            }
+        }
+        else
+        {
+            <h6>Empty</h6>
+        }
+
+    </div>
+
+
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px">
+        <h4>Add item</h4>
+        <div>
+            <label>Who are you? </label>
+            <select @bind="currUserId">
+                @foreach (User user in users)
+                {
+                    <option value="@user.Id">@user.FirstName @user.LastName</option>
+                }
+            </select>
+        </div>
+
+        <button style="width: fit-content" @onclick="HandleUserChange">Continue</button>
+
+        @if (currUser != null)
+        {
+            @if (currUser is Owner || currUser is Librarian)
+            {
+                <div>
+                    <label>Item type: </label>
+                    <select @bind="itemType">
+                        <option>Book</option>
+                        <option>DVD</option>
+                        <option>Game</option>
+                    </select>
+                </div>
+
+                @if (!string.IsNullOrEmpty(itemType))
+                {
+                    @if (itemType == "Book")
+                    {
+                        <div>
+                            <label>Title: </label>
+                            <input @bind="itemName" />
+                        </div>
+
+                        <div>
+                            <label>Author: </label>
+                            <input @bind="author" />
+                        </div>
+                    }
+
+                    @if (itemType == "DVD")
+                    {
+                        <div>
+                            <label>Title: </label>
+                            <input @bind="itemName" />
+                        </div>
+
+                        <div>
+                            <label>Director: </label>
+                            <input @bind="director" />
+                        </div>
+                    }
+
+                    @if (itemType == "Game")
+                    {
+                        <div>
+                            <label>Name: </label>
+                            <input @bind="itemName" />
+                        </div>
+                    }
+                }
+
+                @if (!string.IsNullOrEmpty(itemName))
+                {
+                    <button style="width: fit-content" @onclick="AddItem">Add item</button>
+                }
+            }
+        }
+    </div>
+</div>
+
+@code {
+
+    private string? itemName, author, director, err, itemType;
+    private int? currUserId;
+    User? currUser;
+    private List<User> users = [];
+
+    private List<Game> games = [];
+    private List<DVD> dvds = [];
+    private List<Book> books = [];
+
+    private void HandleUserChange()
+    {
+        Console.WriteLine(users.Count);
+        currUser = users.FirstOrDefault(u => u.Id == currUserId);
+        Console.WriteLine(currUser.FirstName);
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            users = UsersManagement.users;
+            currUserId = users.First().Id;
+
+            games = LibraryItemsManager.games;
+            dvds = LibraryItemsManager.dvds;
+            books = LibraryItemsManager.books;
+
+            itemType = "Book";
+
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    }
+
+    private void RemoveItem<T>(int id, List<T> itemList) where T : LibraryItem
+    {
+        try
+        {
+            T? target = itemList.Find(item => (item as LibraryItem)?.Id == id);
+            if (target != null) itemList.Remove(target);
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    }
+
+    private void AddItem()
+    {
+        try
+        {
+            List<LibraryItem> items = LibraryItemsManager.GetAllItems();
+
+            int id = items.OrderByDescending(item => item.Id).First().Id + 1;
+
+            switch (itemType)
+            {
+                case "Book":
+                    LibraryItemsManager.books.Add(new Book(id, itemName, author));
+                    break;
+                case "DVD":
+                    LibraryItemsManager.dvds.Add(new DVD(id, itemName, director));
+                    break;
+                case "Game":
+                    LibraryItemsManager.games.Add(new Game(id, itemName));
+                    break;
+                default:
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    }
+}
