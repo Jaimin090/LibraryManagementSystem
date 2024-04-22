@@ -248,20 +248,29 @@
 
             int id = items.OrderByDescending(item => item.Id).First().Id + 1;
 
+            LibraryItem item;
+
             switch (itemType)
             {
                 case "Book":
-                    LibraryItemsManager.books.Add(new Book(id, itemName, author));
+                    item = new Book(id, itemName, author);
+                    ((Admin)currUser).AddItem(item);
+
                     break;
                 case "DVD":
-                    LibraryItemsManager.dvds.Add(new DVD(id, itemName, director));
+                    item = new DVD(id, itemName, director);
+                    ((Admin)currUser).AddItem(item);
+
                     break;
                 case "Game":
-                    LibraryItemsManager.games.Add(new Game(id, itemName));
+                    item = new Game(id, itemName);
+                    ((Admin)currUser).AddItem(item);
+
                     break;
                 default:
                     break;
             }
+
         }
         catch (Exception ex)
         {
