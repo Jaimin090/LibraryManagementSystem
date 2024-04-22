@@ -18,9 +18,21 @@ namespace LibraryManagementSystem.Models.Items
             return $"{Title}, {Director}";
         }
 
-        public double CalculateLateFees(int daysLate)
+        public double CalculateLateFees(DateTime todayDate)
         {
-            throw new NotImplementedException();
+            double difference = (ReturnDate - todayDate).Value.TotalDays;
+
+            IsAvailable = true;
+            Borrower = null;
+            BorrowDate = null;
+            ReturnDate = null;
+
+            if (difference < 0)
+            {
+                return Math.Abs(difference);
+            }
+
+            return 0;
         }
     }
 }

@@ -13,6 +13,6 @@ namespace LibraryManagementSystem.Models.Interfaces
         DateTime? BorrowDate { get; set; }
         DateTime? ReturnDate { get; set; }
         User? Borrower { get; set; }
-        double CalculateLateFees(int daysLate);
+        double CalculateLateFees(DateTime todayDate);
     }
 }

@@ -64,41 +64,17 @@ namespace LibraryManagementSystem.DatabaseManager
                 if (item is Book book)
                 {
 
-                    double difference = (book.ReturnDate - todayDate).Value.TotalDays;
-
-                    book.IsAvailable = true;
-                    book.Borrower = null;
-                    book.BorrowDate = null;
-                    book.ReturnDate = null;
-
-                    if (difference < 0)
-                    {
-                        return 0.5 * Math.Abs(difference);
-                    }
-
-                    return 0;
+                    return book.CalculateLateFees(todayDate);
 
                 }
                 else if (item is DVD dvd)
                 {
-                    double difference = (dvd.ReturnDate - todayDate).Value.TotalDays;
-
-                    dvd.IsAvailable = true;
-                    dvd.Borrower = null;
-                    dvd.BorrowDate = null;
-                    dvd.ReturnDate = null;
-
-                    if (difference < 0)
-                    {
-                        return Math.Abs(difference);
-                    }
-
-                    return 0;
+                    return dvd.CalculateLateFees(todayDate);
                 }
 
                 throw new ItemDoesntExistError();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
