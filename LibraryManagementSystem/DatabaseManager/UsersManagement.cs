@@ -8,18 +8,36 @@ namespace LibraryManagementSystem.DatabaseManager
     {
         public static List<User> users = [];
 
-        public static User GetUser(int id)
+        /*
+        Get a user based on user id
+
+              @param - id (int?) - user id
+
+              @return - the User
+              */
+        public static User GetUser(int? id)
         {
-            for (int i = 0; i < users.Count; i++)
+            if (id.HasValue)
             {
-                User user = users[i];
-                if (user.Id == id)
+                for (int i = 0; i < users.Count; i++)
                 {
-                    return user;
+                    User user = users[i];
+                    if (user.Id == id)
+                    {
+                        return user;
+                    }
                 }
+                throw new UserDoesntExistError();
             }
-            throw new UserDoesntExistError();
+            throw new InputNotNumberError("User ID");
         }
+
+        /*
+
+      Get all users
+
+      @return - all users
+      */
 
         public static async Task<List<User>> SelectAllUsers()
         {

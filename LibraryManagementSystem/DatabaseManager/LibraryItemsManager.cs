@@ -1,4 +1,5 @@
-﻿using LibraryManagementSystem.Models.Items;
+﻿using LibraryManagementSystem.Exceptions;
+using LibraryManagementSystem.Models.Items;
 using LibraryManagementSystem.Models.Users;
 using Npgsql;
 using NpgsqlTypes;
@@ -14,20 +15,39 @@ namespace LibraryManagementSystem.DatabaseManager
         public static List<DVD> dvds = [];
         public static List<Book> books = [];
 
-        public static LibraryItem GetItem(int id)
+        /*
+
+        Get a library item based on item id
+
+        @param - id (int?) - item id
+
+        @return - the library item
+        */
+
+        public static LibraryItem GetItem(int? id)
         {
-            List<LibraryItem> allItems = GetAllItems();
-            for (int i = 0; i < allItems.Count; i++)
+            if (id.HasValue)
             {
-                LibraryItem item = allItems[i];
-                if (item.Id == id)
+                List<LibraryItem> allItems = GetAllItems();
+                for (int i = 0; i < allItems.Count; i++)
                 {
-                    return item;
+                    LibraryItem item = allItems[i];
+                    if (item.Id == id)
+                    {
+                        return item;
+                    }
                 }
+                throw new ItemDoesntExistError();
             }
-            throw new Exceptions.ItemDoesntExistError();
+            throw new InputNotNumberError("Item ID");
         }
 
+        /*
+        
+        Get all library items 
+
+              @return - List of all library items
+              */
         public static List<LibraryItem> GetAllItems()
         {
             return new List<LibraryItem>(games.Concat<LibraryItem>(dvds).Concat(books));

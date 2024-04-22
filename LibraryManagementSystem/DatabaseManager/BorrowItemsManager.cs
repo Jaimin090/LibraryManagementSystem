@@ -9,6 +9,13 @@ namespace LibraryManagementSystem.DatabaseManager
 {
     public class BorrowItemsManager
     {
+        /*
+        Handle the borrow process of an item
+
+        @param - user (User) - the user
+        @param - item (LibraryItem) - the item
+
+        */
         public static void HandleBorrow(User user, LibraryItem item)
         {
             try
@@ -32,11 +39,22 @@ namespace LibraryManagementSystem.DatabaseManager
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
+
+        /*
+
+        Handle the return process of an item
+
+        @param - itemId (int) - the item id
+        @param - todayDate (DateTime) - today's date
+
+        @return - penalty fee, 0 if no penalty
+
+        */
 
         public static double HandleReturn(int itemId, DateTime todayDate)
         {

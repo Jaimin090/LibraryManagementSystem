@@ -19,6 +19,7 @@
         </select>
     </div>
 
+    <button @onclick="HandleUserChange">Continue</button>
 
     @if (displayUsers.Count > 0)
     {
@@ -30,7 +31,7 @@
             </p>
             <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Last Name</p>
             <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">User Type</p>
-            <p style="flex-grow: 1; text-align: center; flex-basis:0; margin-block:0"></p>
+            <p style="border: 1px solid black; flex-grow: 1; text-align: center; flex-basis:0; margin-block:0">Action</p>
 
         </div>
         @foreach (User user in displayUsers)
@@ -69,9 +70,6 @@
         <h6>Empty</h6>
     }
 </div>
-
-
-<button @onclick="HandleUserChange">Continue</button>
 
 
 @if (currUser != null)
@@ -116,6 +114,8 @@
     private List<User> users = UsersManagement.users;
     private List<User> displayUsers = [];
 
+
+    // Handles when a different user is selected from the drop down menu.
     private void HandleUserChange()
     {
         currUser = users.FirstOrDefault(u => u.Id == currUserId);
@@ -131,12 +131,13 @@
         }
     }
 
+    // During initialisation, assign the first id from users list to currUserId.
     protected override void OnInitialized()
     {
         currUserId = users.First().Id;
     }
 
-
+    // Get the biggest userid from users list, add 1 to it, then add a new patron with the corresponding information
     private void AddPatron()
     {
         int id = users.OrderByDescending(u => u.Id).First().Id + 1;
@@ -148,6 +149,7 @@
         }
     }
 
+    // Get the biggest userid from users list, add 1 to it, then add a new librarian with the corresponding information
     private void AddLibrarian()
     {
         int id = users.OrderByDescending(u => u.Id).First().Id + 1;
@@ -159,6 +161,13 @@
             UsersManagement.users.Add(librarian);
         }
     }
+
+    /*
+    Remove a user from the users list, add 1
+
+    @param - id (int) - the user id
+
+    */
 
     private void RemoveUser(int id)
     {

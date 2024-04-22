@@ -5,7 +5,7 @@
 @using LibraryManagementSystem.Models.Items;
 
 <div>
-    <h3>@err</h3>
+    <h5>@err</h5>
     <h2>Return item</h2>
 
     <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -16,7 +16,7 @@
             <input @bind="itemId" min="1" type="number" />
             <button @onclick="ContinueFromItemIdInput">Continue</button>
 
-            <h3>@statusBookNotFound</h3>
+            <h3>@err</h3>
 
             @if (!string.IsNullOrEmpty(rentalInfo))
             {
@@ -28,7 +28,7 @@
 
                 <button style="width: fit-content" @onclick="ReturnItem">Return</button>
                 <p style="font-size: 20px;">Penalty: $ @penalty</p>
-}
+                }
             }
 
         </div>
@@ -38,7 +38,7 @@
 @code {
 private int? itemId;
     private string? rentalInfo = "";
-    private string? statusBookNotFound, err;
+    private string? err;
     private static LibraryItem? item;
     private double? penalty;
     private DateTime? todayDate;
@@ -59,7 +59,7 @@ private int? itemId;
                       
                         rentalInfo = $"{book.Borrower.FirstName} {book.Borrower.LastName} borrowed {book.Title}";
                     }
-                    if (item is DVD)
+                    else if (item is DVD)
                     {
                         DVD dvd = (DVD)item;
 
@@ -68,7 +68,7 @@ private int? itemId;
                     }
                     else
                     {
-                        statusBookNotFound = "Item is not borrowed";
+                        err = "Item is not borrowed";
                     }
 
                 }

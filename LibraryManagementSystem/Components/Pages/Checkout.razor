@@ -7,11 +7,12 @@
 
 <div>
     <h2>Checkout</h2>
+    <h5>@err</h5>
 
     <div style="display: flex; flex-direction: column; gap: 10px;">
         <div>
             <label>User id: </label>
-            <input @bind="userId" type="number" min="1" />
+            <input @bind="userId" />
             <button @onclick="ContinueFromUserIdInput">Continue</button>
             @if (user != null)
             {
@@ -24,7 +25,7 @@
         {
             <div>
                 <label>Item id: </label>
-                <input @bind="itemId" min="1" type="number" />
+                <input @bind="itemId" />
                 <button @onclick="ContinueFromItemIdInput">Continue</button>
 
                 @if (item != null)
@@ -50,6 +51,7 @@
     private static LibraryItem? item;
     private string? err;
 
+
     private void CheckOut()
     {
         try
@@ -65,29 +67,27 @@
         }
     }
 
+    // Action after user clicks 'Continue' after entering userid
+
     private void ContinueFromUserIdInput()
     {
         try
         {
-            if (userId.HasValue)
-            {
-                user = UsersManagement.GetUser(userId.Value);
-            }
+            user = UsersManagement.GetUser(userId);
         }
         catch (Exception ex)
         {
             err = ex.Message;
+
         }
     }
 
+    // Action after user clicks 'Continue' after entering item id
     private void ContinueFromItemIdInput()
     {
         try
         {
-            if (itemId.HasValue)
-            {
-                item = LibraryItemsManager.GetItem(itemId.Value);
-            }
+            item = LibraryItemsManager.GetItem(itemId);
         }
         catch (Exception ex)
         {
