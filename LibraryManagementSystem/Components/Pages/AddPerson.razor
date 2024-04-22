@@ -143,9 +143,9 @@
         int id = users.OrderByDescending(u => u.Id).First().Id + 1;
         if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
         {
-            User patron = new Patron(id, firstName, lastName);
+            Patron patron = new Patron(id, firstName, lastName);
 
-            UsersManagement.users.Add(patron);
+            ((Admin)currUser).AddUser(patron);
         }
     }
 
@@ -156,9 +156,9 @@
         if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
         {
 
-            User librarian = new Librarian(id, firstName, lastName);
+            Librarian librarian = new Librarian(id, firstName, lastName);
 
-            UsersManagement.users.Add(librarian);
+            ((Owner)currUser).AddUser(librarian);
         }
     }
 
