@@ -8,7 +8,7 @@ using LibraryManagementSystem.Models.Items;
 
 namespace LibraryManagementSystem.Models.Users
 {
-    public class Librarian(int id, string firstName, string lastName) : User(id, firstName, lastName)
+    public class Librarian(int id, string firstName, string lastName) : Admin(id, firstName, lastName)
     {
         public override string GetInfo()
         {
@@ -20,6 +20,6 @@ namespace LibraryManagementSystem.Models.Users
             return $"{FirstName} {LastName}, Librarian";
         }
 
-        
+
     }
 }

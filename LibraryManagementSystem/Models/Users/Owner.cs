@@ -9,7 +9,7 @@ using LibraryManagementSystem.Models.Items;
 
 namespace LibraryManagementSystem.Models.Users
 {
-    public class Owner(int id, string firstName, string lastName) : User(id, firstName, lastName)
+    public class Owner(int id, string firstName, string lastName) : Admin(id, firstName, lastName)
     {
         public void AddUser(Librarian librarian)
         {
