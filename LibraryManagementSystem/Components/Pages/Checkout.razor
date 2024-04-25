@@ -1,4 +1,5 @@
-﻿@page "/checkout"
+@page "/checkout"
+
 @using LibraryManagementSystem.DatabaseManager
 @using LibraryManagementSystem.Models.Interfaces
 @using LibraryManagementSystem.Models.Users
@@ -6,21 +7,24 @@
 @using LibraryManagementSystem.Models.Items;
 
 <div>
+    <!-- Checkout form -->
     <h2>Checkout</h2>
     <h5>@err</h5>
 
     <div style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- User ID input -->
         <div>
             <label>User id: </label>
             <input @bind="userId" />
             <button @onclick="ContinueFromUserIdInput">Continue</button>
+            <!-- Display user details if available -->
             @if (user != null)
             {
                 <h3>@user.ToString()</h3>
             }
         </div>
 
-
+        <!-- Item ID input -->
         @if (user != null)
         {
             <div>
@@ -28,13 +32,14 @@
                 <input @bind="itemId" />
                 <button @onclick="ContinueFromItemIdInput">Continue</button>
 
+                <!-- Display item details if available -->
                 @if (item != null)
                 {
                     <h3>@item.GetInfo()</h3>
                 }
-
             </div>
 
+            <!-- Checkout button -->
             @if (item != null)
             {
                 <button style="width: fit-content" @onclick="CheckOut">Checkout</button>
@@ -44,14 +49,14 @@
 </div>
 
 @code {
-
+    // Fields
     private int? userId;
     private int? itemId;
     private User? user;
     private static LibraryItem? item;
     private string? err;
 
-
+    // Method to handle checkout
     private void CheckOut()
     {
         try
@@ -67,8 +72,7 @@
         }
     }
 
-    // Action after user clicks 'Continue' after entering userid
-
+    // Method invoked after user clicks 'Continue' after entering userid
     private void ContinueFromUserIdInput()
     {
         try
@@ -78,11 +82,10 @@
         catch (Exception ex)
         {
             err = ex.Message;
-
         }
     }
 
-    // Action after user clicks 'Continue' after entering item id
+    // Method invoked after user clicks 'Continue' after entering item id
     private void ContinueFromItemIdInput()
     {
         try
